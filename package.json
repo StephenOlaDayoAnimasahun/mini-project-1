@@ -4,8 +4,8 @@
   "description": "School management system backend",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js",
-    "build": "ncc build index.js -o dist",
+    "start": "./node-modules/.bin/netlify-lambda serve .",
+    "build": "./node-modules/.bin/netlify-lambda build .",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Stephen",
@@ -16,7 +16,9 @@
     "dotenv": "^16.0.3",
     "express": "^4.18.2",
     "mongodb": "^5.0.1",
-    "mongoose": "^6.9.2"
+    "mongoose": "^6.9.2",
+    "netlify-lambda": "^2.0.16",
+    "serverless-http": "^3.1.1"
   },
   "devDependencies": {
     "@vercel/ncc": "^0.36.1"

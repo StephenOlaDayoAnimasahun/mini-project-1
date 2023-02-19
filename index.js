@@ -6,68 +6,59 @@ const mongoose = require("mongoose");
 const bodyParser = require('body-parser');
 const Config = require("./src/config")
 const {connectToMongoDB, studentSchema} = require('./mongo');
+const ServerlessHttp = require('serverless-http');
 
-async function run(){
-  const app = express();
-  const server = http.createServer(app);
-  
-  // Initialize mongoose connection
-  await connectToMongoDB();
+const app = express();
+const router = express.Router();
 
-  const Student = mongoose.model("Student", studentSchema);
+// Initialize mongoose connection
+await connectToMongoDB();
 
-  // add static folder for nextjs
-  app.use(express.static('public'))
+const Student = mongoose.model("Student", studentSchema);
 
-  // support parsing of application/json type post data
-  app.use(bodyParser.json());
+// add static folder for nextjs
+app.use(express.static('public'))
 
-  //support parsing of application/x-www-form-urlencoded post data
-  app.use(bodyParser.urlencoded({ extended: true }));
+// support parsing of application/json type post data
+app.use(bodyParser.json());
 
-  app.use(cors());
+//support parsing of application/x-www-form-urlencoded post data
+app.use(bodyParser.urlencoded({ extended: true }));
 
-  app.get('/', (req, res) => res.json({status: "Server is alive"}))
+app.use(cors());
 
-  app.get('/find-student/:id', async (req, res) => {
-    try {
-      const { id } = req.params;
-      const student = await Student.findOne({id});
+app.get('/', (req, res) => res.json({status: "Server is alive"}))
 
-      if(student) res.json({success: true, student})
-      
-      else res.json({success: false, error: "Student does not exist"});
-    } catch (error) {
-      res.status(500).json({success: false, error: "Internal Server Error!"});
-    }
-  });
+app.get('/find-student/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const student = await Student.findOne({id});
 
-  app.post('/register', async (req, res) => {
-    try {
-      console.log("Request Body: ", req.body);
-      const newStudent = new Student(req.body);
+    if(student) res.json({success: true, student})
+    
+    else res.json({success: false, error: "Student does not exist"});
+  } catch (error) {
+    res.status(500).json({success: false, error: "Internal Server Error!"});
+  }
+});
 
-      const studentExists = await Student.findOne({id: newStudent.id});
+app.post('/register', async (req, res) => {
+  try {
+    console.log("Request Body: ", req.body);
+    const newStudent = new Student(req.body);
 
-      if(studentExists) return res.status(401).json({success: false, error: "Student already exist"});
+    const studentExists = await Student.findOne({id: newStudent.id});
 
-      const response = await newStudent.save();
+    if(studentExists) return res.status(401).json({success: false, error: "Student already exist"});
 
-      res.status(200).json({success: true, data: response});
-    } catch (error) {
-      res.status(500).json({success: false, error});
-    }    
-  })
+    const response = await newStudent.save();
 
-  server.on('listening', () => {
-    console.log(`Listening on: ${Config.PORT}`);
-  });
+    res.status(200).json({success: true, data: response});
+  } catch (error) {
+    res.status(500).json({success: false, error});
+  }    
+})
 
-  app.use((err, req, res, next) =>{
-    res.status(500).json({message: "Internal Sever Error", err: err});
-  })
+app.use('/.netlify/functions/api', router);
 
-  server.listen(Config.PORT, Config.HOST)
-}
-
-run();
+module.exports.handler = ServerlessHttp(app)
