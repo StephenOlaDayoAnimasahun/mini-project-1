@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
+    "build": "ncc build index.js -o dist",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Stephen",
@@ -16,5 +17,8 @@
     "express": "^4.18.2",
     "mongodb": "^5.0.1",
     "mongoose": "^6.9.2"
+  },
+  "devDependencies": {
+    "@vercel/ncc": "^0.36.1"
   }
 }
