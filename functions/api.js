@@ -4,20 +4,16 @@ const cors = require('cors');
 const express = require('express');
 const mongoose = require("mongoose");
 const bodyParser = require('body-parser');
-const Config = require("./src/config")
 const {connectToMongoDB, studentSchema} = require('./mongo');
-const ServerlessHttp = require('serverless-http');
+const serverless = require('serverless-http');
 
 const app = express();
 const router = express.Router();
 
 // Initialize mongoose connection
-await connectToMongoDB();
+connectToMongoDB();
 
 const Student = mongoose.model("Student", studentSchema);
-
-// add static folder for nextjs
-app.use(express.static('public'))
 
 // support parsing of application/json type post data
 app.use(bodyParser.json());
@@ -61,4 +57,4 @@ app.post('/register', async (req, res) => {
 
 app.use('/.netlify/functions/api', router);
 
-module.exports.handler = ServerlessHttp(app)
+module.exports.handler = serverless(app)

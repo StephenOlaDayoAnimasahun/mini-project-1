@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-const {MONGO_URI} = require("./src/config");
+const {MONGO_URI} = require("../src/config");
 
 const studentSchema = new mongoose.Schema({
   id: {type: String, required: true},
