@@ -1,17 +1,16 @@
+require('dotenv').config();
 const http = require('http');
 const cors = require('cors');
 const express = require('express');
 const mongoose = require("mongoose");
 const bodyParser = require('body-parser');
+const Config = require("./src/config")
 const {connectToMongoDB, studentSchema} = require('./mongo');
-
-const port = 3000;
-const hostname = '127.0.0.1';
 
 async function run(){
   const app = express();
   const server = http.createServer(app);
-
+  
   // Initialize mongoose connection
   await connectToMongoDB();
 
@@ -58,14 +57,14 @@ async function run(){
   })
 
   server.on('listening', () => {
-    console.log(`Listening on: ${port}`);
+    console.log(`Listening on: ${Config.PORT}`);
   });
 
   app.use((err, req, res, next) =>{
     res.status(500).json({message: "Internal Sever Error", err: err});
   })
 
-  server.listen(port, hostname)
+  server.listen(Config.PORT, Config.HOST)
 }
 
 run();
