@@ -16,7 +16,10 @@ async function run(){
 
   const Student = mongoose.model("Student", studentSchema);
 
-    // support parsing of application/json type post data
+  // add static folder for nextjs
+  app.use(express.static('public'))
+
+  // support parsing of application/json type post data
   app.use(bodyParser.json());
 
   //support parsing of application/x-www-form-urlencoded post data
