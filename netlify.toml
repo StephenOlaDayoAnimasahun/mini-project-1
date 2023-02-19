@@ -2,4 +2,4 @@
 command = "npm run build"
 
 [functions]
-myFunction = "server.js"
+myFunction = "index.js"
